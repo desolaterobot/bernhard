@@ -1,1 +1,5 @@
 chromadb
+sentence_transformers
+fastmcp
+PyPDF2
+langchain

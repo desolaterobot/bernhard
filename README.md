@@ -10,8 +10,9 @@ pip install -r requirements.txt
 ```
 python vector.py
 ```
-3. Store text documents: type 's'
-4. Query: type 'q'
+3. Move relevant documents to the documents folder.
+4. Store text documents: type 's'
+5. Query: type 'q'
 
 Sample queries:
 - Who is the joker?
