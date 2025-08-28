@@ -10,6 +10,7 @@ pip install -r requirements.txt
 ```
 streamlit run app.py
 ```
+3. Should appear in browser as localhost
    
 ## Running steps for vector.py:
 1. Install dependencies
