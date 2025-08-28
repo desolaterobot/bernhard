@@ -7,7 +7,7 @@ from vector import store_content, query_content, DOCUMENT_FOLDER
 # ---------- config ----------------- 
 load_dotenv()  #aws_credentials put in .env file
 LLM_MODEL = os.getenv("BEDROCK_LLM_MODEL")
-brt = boto3.client("bedrock-runtime", region_name=os.getenv("AWS_REGION"))
+# brt = boto3.client("bedrock-runtime", region_name=os.getenv("AWS_REGION"))
 
 # ---------- helpers ----------
 def ingest_pdf(file_bytes: bytes, filename: str, title: str | None = None):
@@ -31,8 +31,7 @@ def ingest_pdf(file_bytes: bytes, filename: str, title: str | None = None):
 
 def keyword_boost(query: str, text: str):
     """
-    Not sure what this for,  apparently adds a small boost when query words appear in a chunk 
-    For re-ranking
+    To add a small boost when query words appear in a chunk, need check again
     """
     q = {w.lower() for w in query.split() if len(w) > 2}
     t = {w.lower() for w in text.split()}
@@ -226,7 +225,7 @@ with st.sidebar:
     st.markdown("---")  
     st.caption("All vectors of PDF and txt files are stored locally in ChromaDB.")
     st.markdown("---")
-    DEBUG = st.checkbox("🔍 Debug / Dry-run (skip LLM call)", value=True)
+    DEBUG = st.checkbox("🔍 Debug(skip LLM call)", value=True)
     SHOW_PROMPT = st.checkbox("Show prompt/context preview", value=False)
 
 
@@ -289,7 +288,7 @@ for q, res in reversed(st.session_state.history):
                 st.caption(h["preview"])
 
         if SHOW_PROMPT:
-            # The prompt that was built, what we sent to the model
+            # The context that was built, which would have been sent to model
             hits_for_prompt = res.get("retrieved", [])[:6]
             context_preview = "\n\n".join(
                 [f"[paper_id:{h['paper_id']} title:{h['title']} page:{h['page']} chunk_id:{h['id']}]\n"
