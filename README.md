@@ -1,7 +1,17 @@
 # bernhard
 SimplifyNext Agentic AI Hackathon
 
-## Running steps:
+## Running steps for streamlit app:
+1. Install dependencies
+```
+pip install -r requirements.txt
+```
+2. Run the streamlit app:
+```
+streamlit run app.py
+```
+   
+## Running steps for vector.py:
 1. Install dependencies
 ```
 pip install -r requirements.txt
