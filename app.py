@@ -137,7 +137,7 @@ def route_and_answer(query: str, debug: bool = False):
 
     # If debug: always show what retrieval from database produced; skip Bedrock calls
     if debug:
-        data = dry_run_response(query, hits_list)
+        data = debug_run_response(query, hits_list)
         data["stats"] = stats | {"debug": True}
         data["retrieved"] = [
             {   
@@ -172,7 +172,7 @@ def route_and_answer(query: str, debug: bool = False):
     return {"mode":"ABSTAIN","reason":"No sufficient evidence found in your local library.","stats":stats}
 
 
-def dry_run_response(query: str, hits_list: list[dict]):
+def debug_run_response(query: str, hits_list: list[dict]):
     """
     Return a mock JSON payload shaped like the real RAG response, without model calls.
     Its just to show how the answer should look, i just pass back with RAG Mode
