@@ -3,3 +3,7 @@ sentence_transformers
 fastmcp
 PyPDF2
 langchain
+
+streamlit
+boto3
+python-dotenv
