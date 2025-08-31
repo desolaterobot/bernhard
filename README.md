@@ -55,3 +55,34 @@ Running | Stop | Restart | N tools | More...
 in the JSON. This means the server is running well and copilot has access to the tools.
 
 10.   To confirm, go back to the Copilot window, then click on 'Configure Tools'. Scroll down and you should see the MCP server, followed by a list of functions in the server. This means that the tools are working.
+
+### AWS SSO Login
+1. Install AWS CLI https://awscli.amazonaws.com/AWSCLIV2.msi
+2. Configure AWS SSO
+`aws configure sso`
+3. Fill in SSO information
+```bash
+SSO session name (Recommended): SimplifyNext
+SSO start URL [None]: https://d-9667b91afb.awsapps.com/start
+SSO region [None]: ap-southeast-1 
+SSO registration scopes [sso:account:access]: sso:account:access
+```
+4. Login To AWS Account And Grant Access
+5. Create SSO Profile Name
+`Profile name: [Input]`
+- Profile is stored in \.aws\config file
+6. Obtain Temporary Credentials Via AWS SSO
+`aws sso login --profile [profile name]`
+- SSO Credentials Expiry Every 1-2hrs, have to re-run command
+- Keys start with **ASIA** *(Non-Persistent)*
+7. Access AWS SDK With Profile Name
+```python
+import boto3
+
+# Use your SSO profile
+session = boto3.Session(profile_name="[profile name]")
+print(session.client("sts").get_caller_identity())
+```
+- `get_caller_identity()`: is an STS(Security Token Service) API Call, it returns details about your AWS Identity that your current credentials represent.
+- No need for storing of static API Keys in `.env` or other config files.
+- Reduces risk of secret sprawling.
