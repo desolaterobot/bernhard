@@ -22,14 +22,22 @@ def split_text(content):
         separators=["\n\n", "\n", " ", ""]  # splitting priority
     ) #TODO experiment with these values
     return splitter.split_text(content)
-    
-
 
 def store_content(file_name:str):
     """
     Store the content of a file in ChromaDB. Splits them, vectorizes them, then stores them.
     """
     print(f"Processing content from {file_name}...")
+
+    if os.path.exists('vectordata/stored'):
+        with open('vectordata/stored', "r") as f:
+            if file_name+'\n' in f.readlines():
+                print(f"Content from {file_name} already stored, skipping...")
+                return
+    else:
+        with open('vectordata/stored', "w") as f:
+            pass
+
     if file_name.endswith(".txt"):
         with open(file_name, "r") as f:
             content = f.read()
@@ -51,7 +59,10 @@ def store_content(file_name:str):
                 documents=[chunk for chunk in chunks],
                 metadatas=[{"name": file_name, "chunk_number": i, "page_number": page_number} for i, _ in enumerate(chunks)] # additional data for each chunk, can put document title, page, section name...
             )
-        
+    
+    with open('vectordata/stored', "a") as f: # mark this file as stored, no need to store again.
+        f.write(file_name + "\n")
+
 def query_content(query, N=5):
     """
     Query the content of a paper in ChromaDB, returns the top N most relevant chunks from the documents.
@@ -83,11 +94,18 @@ def print_query_results(query_results):
         print("-"*80)
         print(result['Content'])
         print("="*80)
+    
+def delete_all_vectors():
+    if os.path.exists('vectordata/stored'):
+        os.remove('vectordata/stored')
+    global collection
+    client.delete_collection(name="contents")
+    collection = client.get_or_create_collection(name="contents")
 
 # run this file to vectorize and store the document
 if __name__ == "__main__":
     while True:
-        instructions = "Query (q), Store (s), Exit (e): "
+        instructions = "Query (q), Store (s), Clear (c), Exit (e): "
         inp = input(instructions).lower()
         if inp == "q":
             query = input("Enter your query: ")
@@ -95,5 +113,7 @@ if __name__ == "__main__":
         elif inp == "s":
             for document_name in os.listdir(DOCUMENT_FOLDER):
                 store_content(f"{DOCUMENT_FOLDER}/{document_name}")
+        elif inp == "c":
+            delete_all_vectors()
         elif inp == "e":
             break
