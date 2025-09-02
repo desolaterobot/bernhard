@@ -6,6 +6,10 @@ langchain
 spire.doc
 markdown-pdf
 docx
+
 streamlit
 boto3
 python-dotenv
+
+strands-agents
+strands-agent-tools
