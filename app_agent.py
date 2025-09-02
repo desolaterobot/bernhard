@@ -1,4 +1,3 @@
-# app.py (agent-only, in-process)
 import os, json
 import streamlit as st
 from dotenv import load_dotenv
