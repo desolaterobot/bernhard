@@ -105,6 +105,7 @@ def print_query_results(query_results):
         print("="*80)
     
 def delete_all_vectors():
+    print("Deleting all stored vectors and resetting collection...")
     if os.path.exists('vectordata/stored'):
         os.remove('vectordata/stored')
     global collection

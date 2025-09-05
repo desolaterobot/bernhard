@@ -3,14 +3,14 @@ import streamlit as st
 from dotenv import load_dotenv
 import boto3
 
-from vector import store_content, query_content, DOCUMENT_FOLDER
+from vector import store_content, query_content, DOCUMENT_FOLDER, delete_all_vectors
 # ---------- config ----------------- 
 load_dotenv()  #aws_credentials put in .env file
 LLM_MODEL = os.getenv("BEDROCK_LLM_MODEL")
 # brt = boto3.client("bedrock-runtime", region_name=os.getenv("AWS_REGION"))
 
 # ---------- helpers ----------
-def ingest_pdf(file_bytes: bytes, filename: str, title: str | None = None):
+def ingest_pdf(file_bytes: bytes, filename: str):
     """
     call dimas function to store document, if user want to add on documents
     """
@@ -220,16 +220,61 @@ with st.sidebar:
     title = st.text_input("Paper title (optional)")
     if pdf and st.button("Ingest"):
         with st.spinner("Indexing..."):
-            pid, n = ingest_pdf(pdf.read(), pdf.name, title or pdf.name)
+            # if the user enters a title, we will use that as the stored filename instead
+            pid, n = ingest_pdf(pdf.read(), f"{title}.pdf" if title.strip() != "" else pdf.name)
         if n == None:
             st.error("Duplicate file, already ingested before.")
         else:
             st.success(f"Ingested `{pid}` with {n} chunks")
+
+    st.header("Ingested Papers")
+    if not os.listdir(DOCUMENT_FOLDER):
+        st.info("No papers ingested yet!")
+    else:
+        for fn in os.listdir(DOCUMENT_FOLDER):
+            if fn.lower().endswith(('.txt')):
+                if st.button(f"📄 {fn}", key=fn):
+                    with st.modal(fn):
+                        with open(f"{DOCUMENT_FOLDER}/{fn}", "r") as f:
+                            st.markdown(f.read())
+                        st.button("Close")
+            elif fn.lower().endswith(('.pdf')):
+                if st.button(f"📄 {fn}", key=fn):
+                    os.startfile(os.path.abspath(f"{DOCUMENT_FOLDER}/{fn}"))
+
+    st.header("Created Documents")
+    if not os.listdir('created_documents'):
+        st.info("No created docs yet!")
+    else:
+        for fn in os.listdir('created_documents'):
+            if fn.lower().endswith(('.md')):
+                if st.button(f"📜 {fn}", key=fn):
+                    with st.modal(fn):
+                        with open(f"created_documents/{fn}", "r") as f:
+                            st.markdown(f.read())
+                        st.button("Close")
+            elif fn.lower().endswith(('.pdf', '.docx')):
+                if st.button(f"📄 {fn}", key=fn):
+                    os.startfile(os.path.abspath(f"created_documents/{fn}"))
+    
     st.markdown("---")  
     st.caption("All vectors of PDF and txt files are stored locally in ChromaDB.")
     st.markdown("---")
+    
     DEBUG = st.checkbox("🔍 Debug(skip LLM call)", value=True)
     SHOW_PROMPT = st.checkbox("Show prompt/context preview", value=False)
+    if st.button("DEBUG: DELETE ALL VECTORS & FILES"):
+        delete_all_vectors()
+        for filename in os.listdir(DOCUMENT_FOLDER):
+            file_path = os.path.join(DOCUMENT_FOLDER, filename)
+            if os.path.isfile(file_path):
+                print(f"Deleting file: {file_path}")
+                os.remove(file_path)
+        for filename in os.listdir('created_documents'):
+            file_path = os.path.join('created_documents', filename)
+            if os.path.isfile(file_path):
+                print(f"Deleting file: {file_path}")
+                os.remove(file_path)
 
 
 if "history" not in st.session_state:
