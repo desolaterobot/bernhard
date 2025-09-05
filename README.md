@@ -11,7 +11,7 @@ pip install -r requirements.txt
 ```
 streamlit run app.py
 ```
-4. For error regarding "created_documents", just create a folder in your working directory with the same name.
+4. For error regarding "created_documents", just create a folder in your working directory with the same name for your own usage.
    
 ## Running steps for vector.py:
 1. Install dependencies
