@@ -51,7 +51,7 @@ st.title("Strands Paper Assistant  🤖")
 if "history" not in st.session_state:
     st.session_state.history = []
     
-# ---- sidebar to upload pdf --------------------
+# ---- sidebar UI --------------------
 with st.sidebar: 
     st.header("Upload & Ingest")
     pdf = st.file_uploader("Upload a research paper (PDF)", type=["pdf"])
@@ -94,6 +94,19 @@ with st.sidebar:
             elif fn.lower().endswith(('.pdf', '.docx')):
                 if st.button(f"📄 {fn}", key=fn):
                     os.startfile(os.path.abspath(f"created_documents/{fn}"))
+    
+    if st.button("⚠ DELETE ALL VECTORS & FILES"):
+        delete_all_vectors()
+        for filename in os.listdir(DOCUMENT_FOLDER):
+            file_path = os.path.join(DOCUMENT_FOLDER, filename)
+            if os.path.isfile(file_path):
+                print(f"Deleting file: {file_path}")
+                os.remove(file_path)
+        for filename in os.listdir('created_documents'):
+            file_path = os.path.join('created_documents', filename)
+            if os.path.isfile(file_path):
+                print(f"Deleting file: {file_path}")
+                os.remove(file_path)
     
 
 #---------Main UI: Query and answer-------------------------------------------------------
