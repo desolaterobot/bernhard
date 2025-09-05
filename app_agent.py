@@ -1,13 +1,11 @@
 import os, json
 import streamlit as st
-from dotenv import load_dotenv
 
-load_dotenv()
 from vector import store_content, DOCUMENT_FOLDER
 from agent_core import agent  # Strands Agent instance created in here
 
 st.set_page_config(page_title="Strands Paper Assistant 🤖", layout="wide")
-st.title("Strands Paper Assistant")
+st.title("Strands Paper Assistant  🤖")
     
 if "history" not in st.session_state:
     st.session_state.history = []
@@ -50,8 +48,9 @@ col_run, col_clear = st.columns([1,1])
 
 if col_run.button("Ask") and query:
     with st.spinner("Agent thinking..."):
-        raw_result = agent(query) #call agent
-    st.session_state.history.append((query, raw_result))
+        raw_result = agent(query) #call agent, agent returns an object AgentResult, but the response inside we ask for JSON already
+        result = json.loads(str(raw_result))
+    st.session_state.history.append((query, result))
 
 if col_clear.button("Clear history"):
     st.session_state.history = []

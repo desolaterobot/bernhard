@@ -1,5 +1,7 @@
 import os
 from strands import Agent
+from dotenv import load_dotenv
+
 from agent_tools import (
     semantic_search,
     get_document_names,
@@ -11,6 +13,8 @@ from agent_tools import (
     convert_markdown_document,
 )
 
+load_dotenv(".env")
+
 PROMPT_PATH = os.getenv(
     "AGENT_SYSTEM_PROMPT",
     os.path.join(os.path.dirname(__file__), "system_prompt.txt"),
@@ -19,7 +23,7 @@ PROMPT_PATH = os.getenv(
 with open(PROMPT_PATH, "r", encoding="utf-8") as f:
     PROMPT = f.read().strip()
 
-MODEL_ID = os.getenv("BEDROCK_LLM_MODEL")  
+MODEL_ID = os.getenv("LLM_MODEL_ID")  
 
 def build_agent():
     kwargs = {
@@ -34,11 +38,11 @@ def build_agent():
             read_created_document,
             convert_markdown_document,
         ],
+        "model": MODEL_ID
     }
-    kwargs["model"] = MODEL_ID
     return Agent(**kwargs)
 
 agent = build_agent()
 
 if __name__ == "__main__":
-    print(agent("Summary with citations."))
+    print(agent("Tell me about yourself"))

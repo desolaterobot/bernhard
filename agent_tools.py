@@ -3,9 +3,11 @@ from typing import List, Dict, Union
 
 from vector import *  # provides DOCUMENT_FOLDER, query_content, extract_pdf
 import spire.doc
-import docx          # is this needed?
 import markdown_pdf
 
+from strands import tool
+
+@tool
 def get_document_names():
     """
     Get the names of all stored documents.
@@ -15,6 +17,7 @@ def get_document_names():
         names.append(file)
     return names
 
+@tool
 def get_full_document(document_name: str):
     """
     Get the full text of a document by its name. Call get_document_names() to input the exact name.
@@ -29,6 +32,7 @@ def get_full_document(document_name: str):
     elif document_name.endswith('.pdf'):
         return extract_pdf(f"{DOCUMENT_FOLDER}/{document_name}")
 
+@tool
 def get_document_page(document_name: str, page_number: int):
     """
     Get a specific page of a document by its name. Call get_document_names() to input the exact name.
@@ -44,6 +48,7 @@ def get_document_page(document_name: str, page_number: int):
     elif document_name.endswith('.pdf'):
         return extract_pdf(f"{DOCUMENT_FOLDER}/{document_name}")[page_number-1]
 
+@tool
 def semantic_search(query):
     """
     Semantically search for relevant sections of the stored documents based on the query.
@@ -54,6 +59,7 @@ def semantic_search(query):
     """
     return query_content(query)
 
+@tool
 def create_document(document_name, markdown_string):
     """
     Create a new document. Documents created must be strictly written in markdown, and are stored as .md files.
@@ -71,12 +77,14 @@ def create_document(document_name, markdown_string):
         f.write(markdown_string)
     return os.path.abspath(filename)
 
+@tool
 def get_created_documents():
     """
     Get a list of names of all created markdown documents.
     """
     return [f for f in os.listdir("created_documents") if f.endswith('.md')]
 
+@tool
 def read_created_document(document_name: str):
     """
     Get the content of a created markdown document.
@@ -93,6 +101,7 @@ def read_created_document(document_name: str):
     else:
         return f"Only created markdown documents are supported, found {document_name}."
 
+@tool
 def convert_markdown_document(document_name, document_type):
     """
     Convert a markdown document to another format. Only use this if the client says so.
