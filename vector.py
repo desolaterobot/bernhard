@@ -26,8 +26,11 @@ def split_text(content):
 def store_content(file_name:str):
     """
     Store the content of a file in ChromaDB. Splits them, vectorizes them, then stores them.
+    Returns the number of chunks stored.
     """
     print(f"Processing content from {file_name}...")
+
+    numchunks = 0
 
     if os.path.exists('vectordata/stored'):
         with open('vectordata/stored', "r") as f:
@@ -45,6 +48,7 @@ def store_content(file_name:str):
             chunks = split_text(content)
             print(f"Storing content...")
             chunks = list(set(chunks)) # remove duplicates
+            numchunks += len(chunks)
             collection.upsert(
                 ids=[sha256(chunk.encode()).hexdigest() for chunk in chunks], # for now just use sha256 for chunk ID
                 documents=[chunk for chunk in chunks],
@@ -56,6 +60,7 @@ def store_content(file_name:str):
             chunks = split_text(page_content)
             print(f"Storing content from page {page_number}...")
             chunks = list(set(chunks))
+            numchunks += len(chunks)
             collection.upsert(
                 ids=[sha256(chunk.encode()).hexdigest() for chunk in chunks], # for now just use sha256 for chunk ID
                 documents=[chunk for chunk in chunks],
@@ -64,6 +69,8 @@ def store_content(file_name:str):
     
     with open('vectordata/stored', "a") as f: # mark this file as stored, no need to store again.
         f.write(file_name + "\n")
+
+    return numchunks
 
 def query_content(query, N=5):
     """

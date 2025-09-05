@@ -20,13 +20,13 @@ def ingest_pdf(file_bytes: bytes, filename: str, title: str | None = None):
         f.write(file_bytes)
 
     # Dimas store_content
-    store_content(saved_path)
+    numchunks = store_content(saved_path)
 
     # Return something simple for the UI
     paper_id = os.path.splitext(filename)[0]
-    # If you want to keep "number of chunks", you can let store_content() return it,
+    # If you want to keep "number of chunks", you can let store_content() return it, ok!
     
-    return paper_id, 0
+    return paper_id, numchunks
 
 
 def keyword_boost(query: str, text: str):
@@ -221,7 +221,10 @@ with st.sidebar:
     if pdf and st.button("Ingest"):
         with st.spinner("Indexing..."):
             pid, n = ingest_pdf(pdf.read(), pdf.name, title or pdf.name)
-        st.success(f"Ingested `{pid}` with {n} chunks")
+        if n == None:
+            st.error("Duplicate file, already ingested before.")
+        else:
+            st.success(f"Ingested `{pid}` with {n} chunks")
     st.markdown("---")  
     st.caption("All vectors of PDF and txt files are stored locally in ChromaDB.")
     st.markdown("---")
