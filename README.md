@@ -6,7 +6,7 @@ SimplifyNext Agentic AI Hackathon
 ```
 pip install -r requirements.txt
 ```
-2. Setup .env file with AWS access keys
+2. Setup .env file with AWS model access keys
 3. Run the streamlit app as localhost.
 ```
 streamlit run app.py
