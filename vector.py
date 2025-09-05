@@ -17,8 +17,8 @@ def split_text(content):
     Split the content into chunks for processing
     """
     splitter = RecursiveCharacterTextSplitter(
-        chunk_size=700,    # max size of each chunk (in characters, not tokens)
-        chunk_overlap=200,  # overlap between chunks
+        chunk_size=1500,    # max size of each chunk (in characters, not tokens)
+        chunk_overlap=500,  # overlap between chunks
         separators=["\n\n", "\n", " ", ""]  # splitting priority
     ) #TODO experiment with these values
     return splitter.split_text(content)
@@ -44,7 +44,8 @@ def store_content(file_name:str):
             print(f"Splitting content...")
             chunks = split_text(content)
             print(f"Storing content...")
-            collection.add(
+            chunks = list(set(chunks)) # remove duplicates
+            collection.upsert(
                 ids=[sha256(chunk.encode()).hexdigest() for chunk in chunks], # for now just use sha256 for chunk ID
                 documents=[chunk for chunk in chunks],
                 metadatas=[{"name": file_name, "chunk_number": i} for i, _ in enumerate(chunks)] # additional data for each chunk, can put document title, page, section name...
@@ -54,7 +55,8 @@ def store_content(file_name:str):
             print(f"Splitting content from page {page_number}...")
             chunks = split_text(page_content)
             print(f"Storing content from page {page_number}...")
-            collection.add(
+            chunks = list(set(chunks))
+            collection.upsert(
                 ids=[sha256(chunk.encode()).hexdigest() for chunk in chunks], # for now just use sha256 for chunk ID
                 documents=[chunk for chunk in chunks],
                 metadatas=[{"name": file_name, "chunk_number": i, "page_number": page_number} for i, _ in enumerate(chunks)] # additional data for each chunk, can put document title, page, section name...
