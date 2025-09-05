@@ -2,15 +2,16 @@
 SimplifyNext Agentic AI Hackathon
 
 ## Running steps for streamlit app:
-1. Install dependencies
+1. Install dependencies.
 ```
 pip install -r requirements.txt
 ```
-2. Run the streamlit app:
+2. Setup .env file with AWS model access keys
+3. Run the streamlit app as localhost.
 ```
 streamlit run app.py
 ```
-3. Should appear in browser as localhost
+4. For error regarding "created_documents", just create a folder in your working directory with the same name for your own usage.
    
 ## Running steps for vector.py:
 1. Install dependencies
