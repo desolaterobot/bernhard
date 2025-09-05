@@ -1,30 +1,33 @@
 import os, json
 import streamlit as st
 
-from vector import store_content, DOCUMENT_FOLDER
+from vector import store_content, DOCUMENT_FOLDER, delete_all_vectors
 from agent_core import agent  # Strands Agent instance created in here
 
-st.set_page_config(page_title="Strands Paper Assistant 🤖", layout="wide")
-st.title("Strands Paper Assistant  🤖")
-    
-if "history" not in st.session_state:
-    st.session_state.history = []
+# ---------- helpers ----------
+def ingest_pdf(file_bytes: bytes, filename: str):
+    """
+    call dimas function to store document, if user want to add on documents
+    """
+    os.makedirs(DOCUMENT_FOLDER, exist_ok=True)
+    saved_path = os.path.join(DOCUMENT_FOLDER, filename)
+    with open(saved_path, "wb") as f:
+        f.write(file_bytes)
 
-# ---- sidebar to upload pdf ------
-with st.sidebar:
-    st.header("Upload")
-    pdf = st.file_uploader("Upload a research paper (PDF)", type=["pdf"])
-    title = st.text_input("Paper title")
-    if pdf and st.button("Upload"):
-        os.makedirs(DOCUMENT_FOLDER, exist_ok=True)
-        path = os.path.join(DOCUMENT_FOLDER, pdf.name)
-        with open(path, "wb") as f:
-            f.write(pdf.read())
-        store_content(path)
-        st.success(f"Uploaded `{os.path.splitext(pdf.name)[0]}` into local vector store.")
+    # Dimas store_content
+    numchunks = store_content(saved_path)
+
+    # Return something simple for the UI
+    paper_id = os.path.splitext(filename)[0]
+    # If you want to keep "number of chunks", you can let store_content() return it, ok!
     
-#----Render citations if found in local-----------------------------------------------
+    return paper_id, numchunks
+    
+
 def render_sources(sources):
+    """
+    Render citations if search_result == LOCAL, meaning agent searched locally 
+    """
     if not sources: return
     st.markdown("**Sources**")
     for s in sources:
@@ -40,9 +43,60 @@ def render_sources(sources):
         
         
 
-#-------Call agent and pass the query----------------------------
+#-------streamlit UI----------------------------
 
+st.set_page_config(page_title="Strands Paper Assistant 🤖", layout="wide")
+st.title("Strands Paper Assistant  🤖")
+    
+if "history" not in st.session_state:
+    st.session_state.history = []
+    
+# ---- sidebar to upload pdf --------------------
+with st.sidebar: 
+    st.header("Upload & Ingest")
+    pdf = st.file_uploader("Upload a research paper (PDF)", type=["pdf"])
+    title = st.text_input("Paper title (optional)")
+    if pdf and st.button("Ingest"):
+        with st.spinner("Indexing..."):
+            # if the user enters a title, we will use that as the stored filename instead
+            pid, n = ingest_pdf(pdf.read(), f"{title}.pdf" if title.strip() != "" else pdf.name)
+        if n == None:
+            st.error("Duplicate file, already ingested before.")
+        else:
+            st.success(f"Ingested `{pid}` with {n} chunks")
 
+    st.header("Ingested Papers")
+    if not os.listdir(DOCUMENT_FOLDER):
+        st.info("No papers ingested yet!")
+    else:
+        for fn in os.listdir(DOCUMENT_FOLDER):
+            if fn.lower().endswith(('.txt')):
+                if st.button(f"📄 {fn}", key=fn):
+                    with st.modal(fn):
+                        with open(f"{DOCUMENT_FOLDER}/{fn}", "r") as f:
+                            st.markdown(f.read())
+                        st.button("Close")
+            elif fn.lower().endswith(('.pdf')):
+                if st.button(f"📄 {fn}", key=fn):
+                    os.startfile(os.path.abspath(f"{DOCUMENT_FOLDER}/{fn}"))
+
+    st.header("Created Documents")
+    if not os.listdir('created_documents'):
+        st.info("No created docs yet!")
+    else:
+        for fn in os.listdir('created_documents'):
+            if fn.lower().endswith(('.md')):
+                if st.button(f"📜 {fn}", key=fn):
+                    with st.modal(fn):
+                        with open(f"created_documents/{fn}", "r") as f:
+                            st.markdown(f.read())
+                        st.button("Close")
+            elif fn.lower().endswith(('.pdf', '.docx')):
+                if st.button(f"📄 {fn}", key=fn):
+                    os.startfile(os.path.abspath(f"created_documents/{fn}"))
+    
+
+#---------Main UI: Query and answer-------------------------------------------------------
 query = st.text_input("Ask anything about your papers.")
 col_run, col_clear = st.columns([1,1])
 
@@ -55,8 +109,6 @@ if col_run.button("Ask") and query:
 if col_clear.button("Clear history"):
     st.session_state.history = []
     
-# ----Render all answers-----------------------------------------------------------------
-
 for q, res in reversed(st.session_state.history):
     st.markdown(f"### ❓ {q}")
     
