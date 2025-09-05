@@ -105,6 +105,7 @@ if col_run.button("Ask") and query:
         raw_result = agent(query) #call agent, agent returns an object AgentResult, but the response inside we ask for JSON already
         result = json.loads(str(raw_result))
     st.session_state.history.append((query, result))
+    st.rerun()
 
 if col_clear.button("Clear history"):
     st.session_state.history = []
