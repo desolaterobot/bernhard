@@ -40,8 +40,22 @@ def render_sources(sources):
         if page != "": meta.append(f"p.{page}")
         meta_str = f" — {' · '.join(meta)}" if meta else ""
         st.write(f"- **{title}**{meta_str}")
-        
-        
+
+@st.dialog(f"{st.session_state.get('show_markdown')[0] if st.session_state.get('show_markdown') else 'Markdown Viewer'}")
+def markdown_window():
+    """
+    Display a markdown window when markdown or text file is clicked.
+    """
+    title, content = st.session_state.show_markdown
+    st.markdown(content)
+    b1, b2 = st.columns(2)
+    with b1:
+        if st.button("Refresh"):
+            st.session_state.show_markdown = (title, open(f"{DOCUMENT_FOLDER}/{title}", "r", encoding="utf-8").read())
+            st.rerun()
+    with b2:
+        if st.button("Open in Text Editor"):
+            os.startfile(os.path.abspath(f"{DOCUMENT_FOLDER}/{title}"))
 
 #-------streamlit UI----------------------------
 
@@ -50,7 +64,10 @@ st.title("Strands Paper Assistant  🤖")
     
 if "history" not in st.session_state:
     st.session_state.history = []
-    
+
+if "show_markdown" in st.session_state and st.session_state.show_markdown:
+    markdown_window()
+
 # ---- sidebar UI --------------------
 with st.sidebar: 
     st.header("Upload & Ingest")
@@ -72,10 +89,8 @@ with st.sidebar:
         for fn in os.listdir(DOCUMENT_FOLDER):
             if fn.lower().endswith(('.txt')):
                 if st.button(f"📄 {fn}", key=fn):
-                    with st.modal(fn):
-                        with open(f"{DOCUMENT_FOLDER}/{fn}", "r") as f:
-                            st.markdown(f.read())
-                        st.button("Close")
+                    st.session_state.show_markdown = (f"{fn}", open(f"{DOCUMENT_FOLDER}/{fn}", "r", encoding="utf-8").read())
+                    st.rerun()
             elif fn.lower().endswith(('.pdf')):
                 if st.button(f"📄 {fn}", key=fn):
                     os.startfile(os.path.abspath(f"{DOCUMENT_FOLDER}/{fn}"))
@@ -87,10 +102,8 @@ with st.sidebar:
         for fn in os.listdir('created_documents'):
             if fn.lower().endswith(('.md')):
                 if st.button(f"📜 {fn}", key=fn):
-                    with st.modal(fn):
-                        with open(f"created_documents/{fn}", "r") as f:
-                            st.markdown(f.read())
-                        st.button("Close")
+                    st.session_state.show_markdown = (f"{fn}", open(f"created_documents/{fn}", "r", encoding="utf-8").read())
+                    st.rerun()
             elif fn.lower().endswith(('.pdf', '.docx')):
                 if st.button(f"📄 {fn}", key=fn):
                     os.startfile(os.path.abspath(f"created_documents/{fn}"))
