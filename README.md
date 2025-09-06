@@ -9,7 +9,7 @@ pip install -r requirements.txt
 2. Setup .env file with AWS model access keys
 3. Run the streamlit app as localhost.
 ```
-streamlit run app.py
+streamlit run app_agent.py
 ```
 4. For error regarding "created_documents", just create a folder in your working directory with the same name for your own usage.
    
@@ -37,7 +37,7 @@ Initial findings: Works acceptably, but can be improved by using a better embedd
 ## Running steps for MCP server
 0. Run the server:
 ```
-python agent.py
+python mcp_server.py
 ```
 The server must be running if we want to use the tools.
 
@@ -75,14 +75,16 @@ SSO registration scopes [sso:account:access]: sso:account:access
 6. Obtain Temporary Credentials Via AWS SSO
 `aws sso login --profile [profile name]`
 - SSO Credentials Expiry Every 1-2hrs, have to re-run command
-- Keys start with **ASIA** *(Non-Persistent)*
+- Keys start with **AKIA** *(Persistent)*, configure in **~/.aws/credentials**
+```ini
+[SimplifyNext]
+aws_access_key_id = AKIAxxxxxxxxxxxx
+aws_secret_access_key = AbCdEfGhIjKlMnOpQrStUvWxYz1234567890
+```
 7. Access AWS SDK With Profile Name
-```python
-import boto3
-
-# Use your SSO profile
-session = boto3.Session(profile_name="[profile name]")
-print(session.client("sts").get_caller_identity())
+```bash
+aws sso login --profile YOUR_PROFILE
+aws sts get-caller-identity --profile YOUR_PROFILE
 ```
 - `get_caller_identity()`: is an STS(Security Token Service) API Call, it returns details about your AWS Identity that your current credentials represent.
 - No need for storing of static API Keys in `.env` or other config files.

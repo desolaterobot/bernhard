@@ -2,7 +2,6 @@ from fastmcp import FastMCP
 import os
 from vector import *
 import spire.doc
-import docx
 import markdown_pdf
 
 mcp = FastMCP("Bernhard")

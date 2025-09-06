@@ -2,3 +2,4 @@ vectordata
 __pycache__
 .venv/
 .env
+documents/
