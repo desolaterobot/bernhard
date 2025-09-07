@@ -81,6 +81,7 @@ with st.sidebar:
             st.error("Duplicate file, already ingested before.")
         else:
             st.success(f"Ingested `{pid}` with {n} chunks")
+            st.rerun()
 
     st.header("Ingested Papers")
     if not os.listdir(DOCUMENT_FOLDER):
@@ -120,6 +121,7 @@ with st.sidebar:
             if os.path.isfile(file_path):
                 print(f"Deleting file: {file_path}")
                 os.remove(file_path)
+        st.rerun()
     
 
 #---------Main UI: Query and answer-------------------------------------------------------
