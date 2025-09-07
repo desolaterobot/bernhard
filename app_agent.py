@@ -133,7 +133,7 @@ if col_run.button("Ask") and query:
         raw_result = agent(query) #call agent, agent returns an object AgentResult, but the response inside we ask for JSON already
         # print(raw_result)
         result = json.loads(str(raw_result))
-        print(raw_result)
+        # print(raw_result)
     st.session_state.history.append((query, result))
     st.rerun()
 

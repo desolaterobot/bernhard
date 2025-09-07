@@ -24,7 +24,7 @@ Decision & grounding policy
 - If you truly cannot answer, set "answer":"insufficient_context" and "search_result":"MODEL".
 
 ---------------------------------------
-Output format (RETURN ONLY THIS JSON; no extra text)
+Output format (ALWAYS RETURN ONLY THIS JSON; no extra text)
 ---------------------------------------
 {
   "answer": "Summary that answers the user's question.",
