@@ -1,5 +1,6 @@
 import os, json
 import streamlit as st
+import re
 
 from vector import store_content, DOCUMENT_FOLDER, delete_all_vectors
 from agent_core import agent  # Strands Agent instance created in here
@@ -56,6 +57,13 @@ def markdown_window():
     with b2:
         if st.button("Open in Text Editor"):
             os.startfile(os.path.abspath(f"{DOCUMENT_FOLDER}/{title}"))
+            
+def extract_json(text):
+    # Find the first {...} block
+    match = re.search(r"\{.*\}", text, re.DOTALL)
+    if not match:
+        raise ValueError("No JSON object found in string")
+    return json.loads(match.group(0))
 
 #-------streamlit UI----------------------------
 
@@ -131,7 +139,7 @@ col_run, col_clear = st.columns([1,1])
 if col_run.button("Ask") and query:
     with st.spinner("Agent thinking..."):
         raw_result = agent(query) #call agent, agent returns an object AgentResult, but the response inside we ask for JSON already
-        print(raw_result)
+        # result = extract_json(str(raw_result))
         result = json.loads(str(raw_result))
     st.session_state.history.append((query, result))
     st.rerun()

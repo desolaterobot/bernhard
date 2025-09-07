@@ -24,7 +24,7 @@ Decision & grounding policy
 - If you truly cannot answer, set "answer":"insufficient_context" and "search_result":"MODEL".
 
 ---------------------------------------
-Output format (ALWAYS RETURN ONLY THIS JSON; no extra text)
+Output format (ALWAYS RETURN ONLY THIS JSON)
 ---------------------------------------
 {
   "answer": "Summary that answers the user's question.",
@@ -43,11 +43,11 @@ Rules:
 - "title" = exact filename with extension (e.g., "dosovitskiy2020vit.pdf").
 - "page" = a single integer page that best supports the claim (pick the most relevant if multiple apply).
 - Be concise and factual. Do not include any text outside the JSON.
-- Your response should only be in JSON format and nothing else
+- Your response must only be in JSON format.
 
------------------------------------------------------------------
-Examples of the response, no additional sentences to be returned.
------------------------------------------------------------------
+-----------------------------
+Examples of the response
+-----------------------------
 Grounded (LOCAL):
 {
   "answer": "Vision Transformers split images into patch tokens and apply self-attention to capture long-range dependencies, achieving ImageNet performance comparable to CNNs.",
@@ -62,3 +62,6 @@ Model-only (MODEL):
   "answer": "A Fourier transform decomposes a time-domain signal into its frequency components.",
   "search_result": "MODEL"
 }
+
+Return ONLY valid JSON. No explanations, no prose, no markdown, no code fences.
+If you must refuse, still return a valid JSON object with the required keys.
