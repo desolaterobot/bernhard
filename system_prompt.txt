@@ -43,10 +43,11 @@ Rules:
 - "title" = exact filename with extension (e.g., "dosovitskiy2020vit.pdf").
 - "page" = a single integer page that best supports the claim (pick the most relevant if multiple apply).
 - Be concise and factual. Do not include any text outside the JSON.
+- Your response should only be in JSON format and nothing else
 
----------------------------------------
-Examples
----------------------------------------
+-----------------------------------------------------------------
+Examples of the response, no additional sentences to be returned.
+-----------------------------------------------------------------
 Grounded (LOCAL):
 {
   "answer": "Vision Transformers split images into patch tokens and apply self-attention to capture long-range dependencies, achieving ImageNet performance comparable to CNNs.",
