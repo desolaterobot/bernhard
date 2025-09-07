@@ -54,6 +54,8 @@ def store_content(file_name:str):
                 documents=[chunk for chunk in chunks],
                 metadatas=[{"name": file_name, "chunk_number": i} for i, _ in enumerate(chunks)] # additional data for each chunk, can put document title, page, section name...
             )
+        print("complete!")
+
     elif file_name.endswith(".pdf"):
         for page_number, page_content in enumerate(extract_pdf(file_name)):
             print(f"Splitting content from page {page_number}...")
@@ -66,7 +68,7 @@ def store_content(file_name:str):
                 documents=[chunk for chunk in chunks],
                 metadatas=[{"name": file_name, "chunk_number": i, "page_number": page_number} for i, _ in enumerate(chunks)] # additional data for each chunk, can put document title, page, section name...
             )
-    
+        print("complete!")
     with open('vectordata/stored', "a") as f: # mark this file as stored, no need to store again.
         f.write(file_name + "\n")
 
