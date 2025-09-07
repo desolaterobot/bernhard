@@ -59,7 +59,6 @@ def markdown_window():
             os.startfile(os.path.abspath(f"{DOCUMENT_FOLDER}/{title}"))
             
 def extract_json(text):
-    # Find the first {...} block
     match = re.search(r"\{.*\}", text, re.DOTALL)
     if not match:
         raise ValueError("No JSON object found in string")
@@ -79,7 +78,7 @@ if "show_markdown" in st.session_state and st.session_state.show_markdown:
 # ---- sidebar UI --------------------
 with st.sidebar: 
     st.header("Upload & Ingest")
-    pdf = st.file_uploader("Upload a research paper (PDF)", type=["pdf"])
+    pdf = st.file_uploader("Upload a research paper (PDF)", type=["pdf", "txt"])
     title = st.text_input("Paper title (optional)")
     if pdf and st.button("Ingest"):
         with st.spinner("Indexing..."):
@@ -139,8 +138,7 @@ col_run, col_clear = st.columns([1,1])
 if col_run.button("Ask") and query:
     with st.spinner("Agent thinking..."):
         raw_result = agent(query) #call agent, agent returns an object AgentResult, but the response inside we ask for JSON already
-        # result = extract_json(str(raw_result))
-        result = json.loads(str(raw_result))
+        result = extract_json(str(raw_result))
     st.session_state.history.append((query, result))
     st.rerun()
 
