@@ -66,8 +66,8 @@ def extract_json(text):
 
 #-------streamlit UI----------------------------
 
-st.set_page_config(page_title="Strands Paper Assistant 🤖", layout="wide")
-st.title("Strands Paper Assistant  🤖")
+st.set_page_config(page_title="Bernhard's Apprentices Research Assistant 🤖", layout="wide")
+st.title("Bernhard's Apprentices Research Assistant  🤖")
     
 if "history" not in st.session_state:
     st.session_state.history = []
@@ -138,7 +138,7 @@ col_run, col_clear = st.columns([1,1])
 if col_run.button("Ask") and query:
     with st.spinner("Agent thinking..."):
         raw_result = agent(query) #call agent, agent returns an object AgentResult, but the response inside we ask for JSON already
-        result = extract_json(str(raw_result))
+        result = extract_json(str(raw_result))  
     st.session_state.history.append((query, result))
     st.rerun()
 
