@@ -5,6 +5,11 @@ import re
 from vector import store_content, DOCUMENT_FOLDER, delete_all_vectors
 from agent_core import agent  # Strands Agent instance created in here
 
+if not os.path.exists('documents'):
+    os.mkdir('documents')
+if not os.path.exists('created_documents'):
+    os.mkdir('created_documents')
+
 # ---------- helpers ----------
 def ingest_pdf(file_bytes: bytes, filename: str):
     """
